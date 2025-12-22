@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Spark
+*.log
+spark-warehouse/
+
+# Data
+data/
+*.parquet
+*.csv
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
