@@ -1,0 +1,4 @@
+apache-beam[gcp]==2.55.0
+requests
+pandas
+pyarrow

@@ -9,3 +9,17 @@ Spark (Dataproc / Databricks)
 GCS (Silver / Gold)
         ↓
 BigQuery
+
+##################
+
+API ANP
+  ↓
+[ Beam / Dataflow ]
+  ↓
+🥉 Bronze (JSON / raw)
+  ↓
+[ Spark / Beam SQL ]
+  ↓
+🥈 Silver (Parquet, schema)
+  ↓
+[ BQ / ML / BI ]

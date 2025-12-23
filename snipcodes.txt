@@ -1,0 +1,21 @@
+docker compose exec fuel-data-dev bash
+gcloud auth application-default login
+
+gcloud services enable \
+  dataflow.googleapis.com \
+  compute.googleapis.com \
+  storage.googleapis.com
+
+
+gcloud storage buckets add-iam-policy-binding gs://NOME-DO-SEU-BUCKET \
+    --member="serviceAccount:SUA-SERVICE-ACCOUNT@projeto.iam.gserviceaccount.com" \
+    --role="roles/storage.objectAdmin"
+
+gcloud projects get-iam-policy PROJECT\
+--flatten="bindings[].members" \
+--format="table(bindings.role, bindings.members)" \
+| grep "compute"
+
+gcloud iam service-accounts add-iam-policy-binding SUA-SERVICE-ACCOUNT \
+    --member="user:SEU-EMAIL-DE-LOGIN@gmail.com" \
+    --role="roles/iam.serviceAccountUser"

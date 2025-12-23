@@ -23,3 +23,25 @@ Centralizar dados públicos da ANP, garantindo:
 
 ## Status
 🚧 Em desenvolvimento
+
+---
+
+## Lições Aprendidas (Engineering Notes)
+
+### 1. Ambiente Reprodutível com Docker
+Todo o ambiente de desenvolvimento é versionado via:
+- `Dockerfile`
+- `docker-compose.yml`
+- `requirements.txt`
+
+Benefícios:
+- consistência entre dev / CI / produção  
+- isolamento de dependências (Beam, Java, GCP SDK)  
+- onboarding rápido
+
+### 2. Diferença entre DirectRunner e DataflowRunner
+- **DirectRunner**: execução local, utiliza credenciais do usuário
+- **DataflowRunner**: execução distribuída, utiliza **Service Accounts**
+
+Problemas de IAM e staging não aparecem no DirectRunner, mas surgem no DataflowRunner.
+

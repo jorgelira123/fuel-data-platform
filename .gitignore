@@ -3,10 +3,12 @@ __pycache__/
 *.pyc
 .venv/
 .env
+.env.*
 
 # Spark
 *.log
 spark-warehouse/
+*.tmp
 
 # Data
 data/
@@ -19,3 +21,13 @@ data/
 # IDE
 .vscode/
 .idea/
+
+# Docker
+*.pid
+
+# GCP
+.gcp/
+*.json
+**/application_default_credentials.json
+**/gcloud/
+**/.config/gcloud/
