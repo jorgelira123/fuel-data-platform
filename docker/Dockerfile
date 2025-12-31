@@ -29,6 +29,7 @@ RUN apt-get update \
 # Variáveis Java
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH="$JAVA_HOME/bin:$PATH"
+ENV GOOGLE_CLOUD_QUOTA_PROJECT=fuel-data-project-482021
 
 # Diretório de trabalho
 WORKDIR /app

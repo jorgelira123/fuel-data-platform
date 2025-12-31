@@ -16,7 +16,7 @@ API ANP
   ↓
 [ Beam / Dataflow ]
   ↓
-🥉 Bronze (JSON / raw)
+🥉 Bronze (JSON Line/ raw)
   ↓
 [ Spark / Beam SQL ]
   ↓

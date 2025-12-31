@@ -19,3 +19,7 @@ gcloud projects get-iam-policy PROJECT\
 gcloud iam service-accounts add-iam-policy-binding SUA-SERVICE-ACCOUNT \
     --member="user:SEU-EMAIL-DE-LOGIN@gmail.com" \
     --role="roles/iam.serviceAccountUser"
+
+logging.warning(f"Campo de total não encontrado. Resposta da API: {list(data.keys())}")
+filter_info = data.get("searchPageFilter", {})
+
