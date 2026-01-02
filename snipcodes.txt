@@ -6,7 +6,6 @@ gcloud services enable \
   compute.googleapis.com \
   storage.googleapis.com
 
-
 gcloud storage buckets add-iam-policy-binding gs://NOME-DO-SEU-BUCKET \
     --member="serviceAccount:SUA-SERVICE-ACCOUNT@projeto.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
@@ -23,3 +22,47 @@ gcloud iam service-accounts add-iam-policy-binding SUA-SERVICE-ACCOUNT \
 logging.warning(f"Campo de total não encontrado. Resposta da API: {list(data.keys())}")
 filter_info = data.get("searchPageFilter", {})
 
+gsutil cp bronze_to_silver.py gs://bk_anp_raw/silver/scripts/
+
+gcloud dataproc clusters create cluster-silver-rapido \
+    --region=us-east1 \
+    --single-node \
+    --master-machine-type=e2-standard-2 \
+    --master-boot-disk-size=32 \
+    --image-version=2.1-debian11 \
+    --max-idle=5m \
+    --service-account="sa-dataproc-silver@fuel-data-project-482021.iam.gserviceaccount.com" \
+    --project=fuel-data-project-482021
+
+# Permissão de Worker do Dataproc
+gcloud projects add-iam-policy-binding fuel-data-project-482021 \
+    --member="serviceAccount:sa-dataproc-silver@fuel-data-project-482021.iam.gserviceaccount.com" \
+    --role="roles/dataproc.worker"
+
+# Permissão para ler e gravar no Cloud Storage
+gcloud projects add-iam-policy-binding fuel-data-project-482021 \
+    --member="serviceAccount:sa-dataproc-silver@fuel-data-project-482021.iam.gserviceaccount.com" \
+    --role="roles/storage.objectAdmin"
+
+gcloud dataproc jobs submit pyspark gs://bk_anp_raw/scripts/silver_anp_transformation.py \
+    --cluster=cluster-silver-rapido \
+    --region=us-east1
+
+bq mk \
+--external_table_definition=PARQUET:gs://bk_anp_raw/silver/anp/combustivel/* \
+--project_id=fuel-data-project-482021 \
+fuel_analysis.tb_anp_silver
+
+cat <<EOF > def.json
+{
+  "sourceFormat": "PARQUET",
+  "sourceUris": ["gs://bk_anp_raw/silver/anp/combustivel/*"],
+  "hivePartitioningOptions": {
+    "mode": "AUTO",
+    "sourceUriPrefix": "gs://bk_anp_raw/silver/anp/combustivel/",
+    "requirePartitionFilter": false
+  }
+}
+EOF
+
+bq mk --external_table_definition=def.json fuel_analysis.tb_anp_silver

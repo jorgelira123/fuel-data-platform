@@ -76,3 +76,9 @@ No Apache Beam, o código dentro de um DoFn é serializado e enviado para worker
 Boas Práticas: Importar bibliotecas pesadas (como requests) dentro do método process.
 
 Por que: Isso evita erros de NameError ou falhas de serialização caso o ambiente do worker tenha variações mínimas de instalação, garantindo que a dependência seja resolvida no momento da execução da tarefa.
+
+### 9.
+Para otimização de custos (FinOps), utilizei o conceito de Clusters Efêmeros. Configurei um idletimeout para garantir que os recursos computacionais fossem desalocados imediatamente após a transformação da camada Silver, minimizando o desperdício de créditos na GCP.
+
+### 10. Lembrar da permissao
+criado 1 service account para rodar o dataproc
