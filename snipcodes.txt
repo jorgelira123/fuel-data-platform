@@ -44,9 +44,11 @@ gcloud projects add-iam-policy-binding fuel-data-project-482021 \
     --member="serviceAccount:sa-dataproc-silver@fuel-data-project-482021.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
 
-gcloud dataproc jobs submit pyspark gs://bk_anp_raw/scripts/silver_anp_transformation.py \
+gcloud dataproc jobs submit pyspark gs://bk_anp_raw/silver/scripts/bronze_to_silver.py \
     --cluster=cluster-silver-rapido \
     --region=us-east1
+
+gcloud dataproc clusters list --region=us-east1
 
 bq mk \
 --external_table_definition=PARQUET:gs://bk_anp_raw/silver/anp/combustivel/* \
@@ -66,3 +68,8 @@ cat <<EOF > def.json
 EOF
 
 bq mk --external_table_definition=def.json fuel_analysis.tb_anp_silver
+
+gcloud dataproc jobs submit pyspark gs://bk_anp_raw/gold/scripts/silver_to_gold.py \
+--cluster=cluster-silver-rapido \
+--region=us-east1
+

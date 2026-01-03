@@ -95,3 +95,15 @@ A integração entre o Cloud Storage (Data Lake) e o BigQuery (Data Warehouse) f
 - **Pruning de Partição:** Esta estrutura permite que o BigQuery realize o "partition pruning", lendo apenas as pastas necessárias durante a consulta SQL, o que reduz drasticamente a latência e o custo de consulta.
 
 - **Configuração via JSON:** O uso de arquivos de definição (def.json) com sourceUriPrefix foi necessário para que o BigQuery reconhecesse corretamente os metadados das pastas como colunas virtuais da tabela.
+
+### 10. Camada Gold e Analytics de Valor
+- **Business Logic:** Implementação de métricas de Market Share e capacidade instalada utilizando agregações temporais.
+
+- **Serving Layer:** Disponibilização dos dados via BigQuery Views para consumo no Looker Studio, garantindo que o processamento pesado de joins e agregações ocorra na camada de dados, e não na visualização.
+
+- **Métricas de Performance:** O uso de Views Gold permite reduzir o volume de dados escaneados em ferramentas de BI, otimizando o custo de consulta por usuário.
+
+## 11. Visualização e BI (Looker Studio)
+- **Dashboard Executivo:** Integração direta com a camada Gold do BigQuery.
+- **Métricas Chave:** Monitorização de Market Share por Distribuidora, Capacidade de Armazenamento por UF e evolução temporal da base de postos.
+- **Self-Service BI:** Utilização de filtros dinâmicos que aproveitam o particionamento do BigQuery para garantir consultas rápidas e de baixo custo.
