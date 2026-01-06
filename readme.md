@@ -28,7 +28,7 @@ Finalizado
 
 <p align="center">
   <img src="docs/images/looker_tela1.png" width="900"/>
-  <img src="docs/images/ooke_tela2.png" width="900"/>
+  <img src="docs/images/looke_tela2.png" width="900"/>
 </p>
 
 <p align="center">
