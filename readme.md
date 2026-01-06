@@ -67,7 +67,7 @@ Evitar o "brute-force" de disparar milhares de requisições às cegas melhora a
 
 - **Técnica:** Realizar uma requisição síncrona inicial (fora do pipeline) para capturar metadados de paginação.
 
-- **Aprendizado:** Identificamos que a ANP encapsula os controles de página no objeto searchPageFilter. Campos como totalPagina e totalRegistro devem ser usados para definir o range dinâmico do beam.Create.
+- **Aprendizado:** A ANP encapsula os controles de página no objeto searchPageFilter. Campos como totalPagina e totalRegistro devem ser usados para definir o range dinâmico do beam.Create .
 
 ### 5. Serialização e Escopo de Importação (Lazy Imports)
 No Apache Beam, o código dentro de um DoFn é serializado e enviado para workers remotos.
@@ -88,7 +88,7 @@ O desafio técnico da Camada Silver foi converter o schema aninhado da ANP em um
 
 - **Explode e Flatten:** O uso da função F.explode do PySpark permitiu transformar arrays de produtos em linhas individuais, garantindo granularidade para análises de tancagem e bicos.
 
-- **Tratamento de Coordenadas:** Conversão de strings com separadores latinos (vírgula) para DecimalType(10,6) através de F.regexp_replace, essencial para a integração correta com ferramentas de GIS e BI.
+- **Tratamento de Coordenadas:** Conversão de strings com separadores GEOGRAPHY para coordenadas.
 
 ### 8. Isolamento de Privilégios com Service Accounts Granulares
 Seguindo o Princípio do Menor Privilégio, isolamos a identidade do Dataproc da identidade do Dataflow.
@@ -113,7 +113,7 @@ A integração entre o Cloud Storage (Data Lake) e o BigQuery (Data Warehouse) f
 
 - **Métricas de Performance:** O uso de Views Gold permite reduzir o volume de dados escaneados em ferramentas de BI, otimizando o custo de consulta por usuário.
 
-## 11. Visualização e BI (Looker Studio)
+### 11. Visualização e BI (Looker Studio)
 - **Dashboard Executivo:** Integração direta com a camada Gold do BigQuery.
 - **Métricas Chave:** Monitorização de Market Share por Distribuidora, Capacidade de Armazenamento por UF e evolução temporal da base de postos.
 - **Self-Service BI:** Utilização de filtros dinâmicos que aproveitam o particionamento do BigQuery para garantir consultas rápidas e de baixo custo.
