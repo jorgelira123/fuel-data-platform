@@ -22,7 +22,7 @@ Centralizar dados públicos da ANP, garantindo:
 - **Gold**: métricas analíticas
 
 ## Status
-🚧 Em desenvolvimento
+Finalizado 
 
 ---
 
