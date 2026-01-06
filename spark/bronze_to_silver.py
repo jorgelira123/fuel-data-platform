@@ -16,7 +16,7 @@ def main():
         StructField("qtdeBicos", IntegerType(), True)
     ])
 
-    # 2. Definição do Schema Bronze Principal (Lendo tudo como String para evitar arredondamento precoce)
+    # 2. Definição do Schema Bronze Principal
     bronze_schema = StructType([
         StructField("codigoSIMP", StringType(), True),
         StructField("autorizacao", StringType(), True),
@@ -57,7 +57,6 @@ def main():
     df_exploded = df_raw.withColumn("prod_item", F.explode(F.col("produtos")))
 
     # --- Função de Suporte: Conversão GMS (ANP4C) para Decimal ---
-    # Esta função resolve o problema do arredondamento na Bronze usando a coluna de alta precisão
     def convert_anp4c_to_decimal(col_name):
         # Sinal negativo para Alagoas/Brasil
         sign = F.when(F.substring(F.col(col_name), 1, 1) == "-", -1.0).otherwise(1.0)

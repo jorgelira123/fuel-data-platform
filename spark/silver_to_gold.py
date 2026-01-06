@@ -10,7 +10,7 @@ def main():
     path_silver = "gs://bk_anp_raw/silver/anp/combustivel/"
     df_silver = spark.read.parquet(path_silver)
 
-    # Função para converter GMS (ANP4C) para Decimal (Necessário para o Mapa)
+    # Função para converter GMS (ANP4C) para Decimal
     def convert_anp4c_to_decimal(col_name):
         sign = F.when(F.substring(F.col(col_name), 1, 1) == "-", -1.0).otherwise(1.0)
         clean_col = F.regexp_replace(F.regexp_replace(F.col(col_name), "-", ""), ",", ".")
@@ -21,8 +21,7 @@ def main():
             parts.getItem(2).cast("double") / 3600.0
         ))
 
-    # --- TABELA 1: GOLD GEOGRAFIA (Para o Mapa) ---
-    # Correção: Agora usando VÍRGULAS para separar as colunas
+    #TABELA 1: GOLD GEOGRAFIA 
     df_gold_geografia = df_silver.groupBy(
         "latitude_anp4c", 
         "longitude_anp4c", 
@@ -39,7 +38,7 @@ def main():
         F.max("data_obtencao_anp").alias("ultima_atualizacao")
     )
 
-    # --- TABELA 2: GOLD MERCADO (Estatísticas) ---
+    #TABELA 2: GOLD MERCADO
     df_gold_mercado = df_silver.groupBy(
         "uf", 
         "municipio", 

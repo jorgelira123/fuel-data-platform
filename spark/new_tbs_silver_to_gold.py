@@ -14,9 +14,7 @@ def main():
 
     print("=== Iniciando job Silver -> Gold ===")
 
-    # ===============================
     # 1. Leitura da camada Silver
-    # ===============================
     path_silver = "gs://bk_anp_raw/silver/anp/combustivel/"
     df_silver = spark.read.parquet(path_silver)
 
@@ -26,9 +24,6 @@ def main():
     df_silver = df_silver.cache()
     print("Silver carregada com sucesso")
 
-    # ===============================
-    # Helper: Conversão ANP4C (GMS) -> Decimal
-    # ===============================
     def convert_anp4c_to_decimal(col_name):
         sign = F.when(F.substring(F.col(col_name), 1, 1) == "-", -1.0).otherwise(1.0)
         clean_col = F.regexp_replace(
@@ -43,9 +38,6 @@ def main():
             parts.getItem(2).cast("double") / 3600.0
         )
 
-    # ===============================
-    # Enriquecimento geográfico
-    # ===============================
     df_with_geo = (
         df_silver
         .withColumn("latitude_mapa", convert_anp4c_to_decimal("latitude_anp4c"))
@@ -55,9 +47,7 @@ def main():
 
     print("Geo enriquecido")
 
-    # ===============================
     # 1. TB_GOLD_POSTO
-    # ===============================
     df_gold_posto = df_with_geo.groupBy("cnpj").agg(
         F.max("razao_social").alias("razao_social"),
         F.max("uf").alias("uf"),
@@ -73,9 +63,8 @@ def main():
         F.max("data_obtencao_anp").alias("ultima_atualizacao")
     )
 
-    # ===============================
+    
     # 2. TB_GOLD_CAPACIDADE_PRODUTO
-    # ===============================
     df_gold_capacidade_produto = df_silver.groupBy(
         "uf", "municipio", "produto_nome"
     ).agg(
@@ -87,9 +76,8 @@ def main():
         ).otherwise(0).alias("capacidade_media_por_posto")
     )
 
-    # ===============================
+    
     # 3. TB_GOLD_DISTRIBUIDORA
-    # ===============================
     df_gold_distribuidora = df_silver.groupBy(
         "distribuidora", "uf", "municipio"
     ).agg(
@@ -102,9 +90,8 @@ def main():
         F.concat_ws(", ", F.collect_set("produto_nome")).alias("mix_produtos")
     )
 
-    # ===============================
+    
     # 4. TB_GOLD_GEO_QUALIDADE
-    # ===============================
     df_gold_geo_qualidade = df_with_geo.groupBy(
         "uf", "municipio"
     ).agg(
@@ -125,9 +112,8 @@ def main():
         ).otherwise(0)
     )
 
-    # ===============================
+    
     # 5. TB_GOLD_TEMPORAL
-    # ===============================
     df_gold_temporal = df_silver.groupBy(
         "data_obtencao_anp"
     ).agg(
@@ -141,9 +127,8 @@ def main():
         ).alias("novos_postos")
     )
 
-    # ===============================
+    
     # Escrita da camada Gold
-    # ===============================
     path_gold = "gs://bk_anp_raw/gold/anp/"
 
     df_gold_posto.repartition("uf").write.mode("overwrite") \
