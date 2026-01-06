@@ -12,7 +12,7 @@ Centralizar dados públicos da ANP, garantindo:
 ## Arquitetura
 - Ingestão: Dataflow (Apache Beam)
 - Storage: Google Cloud Storage (Parquet)
-- Processamento: Spark (Dataproc / Databricks)
+- Processamento: Spark (Dataproc)
 - Orquestração: Cloud Composer (Airflow)
 - Analytics: BigQuery
 
