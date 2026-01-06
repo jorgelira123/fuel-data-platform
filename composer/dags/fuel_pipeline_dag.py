@@ -1,13 +1,30 @@
 from airflow import DAG
+from airflow.providers.google.cloud.operators.dataproc import (
+    DataprocCreateClusterOperator,
+    DataprocSubmitJobOperator,
+    DataprocDeleteClusterOperator
+)
 from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
-from datetime import datetime, timedelta
+from airflow.utils.dates import days_ago
+from airflow.utils.trigger_rule import TriggerRule
 
 # Configurações básicas
 PROJECT_ID = "fuel-data-project-482021"
 REGION = "us-east1"
-CLUSTER_NAME = "cluster-silver-rapido"
+CLUSTER_NAME = "cluster-gold-al"
 PYSPARK_JOB_PATH = "gs://bk_anp_raw/gold/scripts/new_tbs_silver_to_gold.py"
+
+# Configurações do Cluster
+CLUSTER_CONFIG = {
+    "master_config": {
+        "num_instances": 1,
+        "machine_type_uri": "e2-standard-2",
+        "disk_config": {"boot_disk_size_gb": 32},
+    },
+    "software_config": {"image_version": "2.1-debian11"},
+    "lifecycle_config": {"idle_delete_ttl": {"seconds": 300}}, # 5min ocioso
+}
 
 default_args = {
     'owner': 'engenharia_dados',
@@ -21,11 +38,20 @@ default_args = {
 with DAG(
     'fuel_pipeline_anp_gold',
     default_args=default_args,
-    description='Pipeline de processamento ANP: Silver para Gold',
+    description='Pipeline de processamento ANP: Silver para Gold Alagoas',
     schedule_interval='@daily',
     catchup=False,
     tags=['ANP', 'ALAGOAS', 'GOLD'],
 ) as dag:
+
+    # 1. CRIA O CLUSTER
+    create_cluster = DataprocCreateClusterOperator(
+        task_id="create_cluster",
+        project_id=PROJECT_ID,
+        cluster_name=CLUSTER_NAME,
+        cluster_config=CLUSTER_CONFIG,
+        region=REGION,
+    )
 
     # 1. Script Spark
     process_gold_spark = DataprocSubmitJobOperator(
@@ -37,7 +63,7 @@ with DAG(
         },
         region=REGION,
         project_id=PROJECT_ID,
-
+        
     )
 
     # 2. Tarefa para Atualizar a View no BigQuery
@@ -76,5 +102,14 @@ with DAG(
         project_id=PROJECT_ID
     )
 
-    # Fluxo de execução
-    process_gold_spark >> refresh_bigquery_view
+    # 4. DELETA O CLUSTER
+    delete_cluster = DataprocDeleteClusterOperator(
+        task_id="delete_cluster",
+        project_id=PROJECT_ID,
+        cluster_name=CLUSTER_NAME,
+        region=REGION,
+        trigger_rule=TriggerRule.ALL_DONE, # Morra mesmo se o spark falhar
+    )
+
+    # Fluxo de Automacao
+    create_cluster >> process_gold_spark >> refresh_gold_views >> delete_cluster
