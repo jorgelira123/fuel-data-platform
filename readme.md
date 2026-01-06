@@ -24,7 +24,17 @@ Centralizar dados públicos da ANP, garantindo:
 ## Status
 Finalizado 
 
----
+<h1 align="center">Panorama Setorial ANP – Estado de Alagoas</h1>
+
+<p align="center">
+  <img src="docs/images/looker_tela1.png" width="900"/>
+  <img src="docs/images/ooke_tela2.png" width="900"/>
+</p>
+
+<p align="center">
+  <em>Visão consolidada da infraestrutura de abastecimento de combustíveis em Alagoas (ANP).</em>
+</p>
+
 
 ## Lições Aprendidas (Engineering Notes)
 
