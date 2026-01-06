@@ -1,5 +1,5 @@
 docker compose exec fuel-data-dev bash
-gcloud auth application-default login
+gcloud auth login
 
 gcloud services enable \
   dataflow.googleapis.com \

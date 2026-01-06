@@ -34,3 +34,5 @@ data/
 
 #test
 dataflow/test.py
+
+snipcodes.txt
